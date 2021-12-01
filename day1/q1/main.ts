@@ -6,9 +6,7 @@ const file = readFileSync('./day1/input.txt');
 const result = chain(file)
   .split('\n')
   .map(val => +val)
-  .filter((val, index, list) => {
-    return index > 0 && list[index] > list[index-1]
-  })
+  .filter((val, index, list) => list[index] > list[index-1])
   .size()
   .valueOf();
 
