@@ -11,13 +11,3 @@ const result = chain(file)
   .valueOf();
 
 console.log(result);
-
-
-console.log(require('fs')
-  .readFileSync('./day1/input.txt')
-  .toString()
-  .split('\n')
-  .map((val: string) => +val)
-  .filter((val: number, index: number, list: number[]) => val > list[index-1])
-  .length
-)
