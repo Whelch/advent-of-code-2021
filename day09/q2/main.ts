@@ -56,7 +56,7 @@ function flood(x: number, y: number): string[] {
 
 lowPoints.forEach(([x, y], index) => {
   const uncheckedPoints = [stringifyPoint(x, y)];
-  const foundPoints: string[] = [];
+  const foundPoints: string[] = [...uncheckedPoints];
 
   while(uncheckedPoints.length > 0) {
     const newPoints = difference(flood(...parsePoint(uncheckedPoints.pop())), foundPoints);
