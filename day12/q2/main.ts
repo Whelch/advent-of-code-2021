@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs';
-import { chain, uniq, last, countBy } from 'lodash';
+import { chain, last } from 'lodash';
 
 const file = readFileSync('./day12/input.txt');
 
