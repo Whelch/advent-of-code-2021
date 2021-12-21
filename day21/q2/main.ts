@@ -1,4 +1,4 @@
-import { find } from 'lodash';
+import { get, set } from 'lodash';
 
 const rollWeights: Record<number, number> = {
   3: 1,
@@ -10,63 +10,76 @@ const rollWeights: Record<number, number> = {
   9: 1,
 };
 
-interface Universe {
-  scores: [number, number];
-  positions: [number, number];
-  turn: number;
-  multiplicity: number;
-}
+/**
+ * [
+ * { // turn 0
+ *   p1 score: {
+ *     p2 score: {
+ *       p1 position: {
+ *         p2 position: multiplicity
+ *       }
+ *     }
+ *   }
+ * },
+ * { // turn 1
+ *   p1 score: {
+ *     p2 score: {
+ *       p1 position: {
+ *         p2 position: multiplicity
+ *       }
+ *     }
+ *   }
+ * }
+ * ]
+ */
+let universesMap: [any, any] = [{}, {}];
 
-let universes: Universe[] = [{
-  scores: [0, 0],
-  positions: [5, 1],
-  turn: 0,
-  multiplicity: 1
-}];
-
-function addUniverse(universe: Universe) {
-  const existingUniverse = universes.find(
-    uni => uni.scores[0] === universe.scores[0]
-    && uni.scores[1] === universe.scores[1]
-    && uni.positions[0] === universe.positions[0]
-    && uni.positions[1] === universe.positions[1]
-    && uni.turn === universe.turn
-  );
-
-  if (existingUniverse) {
-    existingUniverse.multiplicity += universe.multiplicity;
-  } else {
-    universes.push(universe);
-  }
+function updateUniverse(turn: number, scores: [number, number], positions: [number, number], multiplicity: number) {
+  set(universesMap, [turn, scores[0], scores[1], positions[0], positions[1]], multiplicity);
 }
 
 let universeWinners: [number, number] = [0, 0];
 
+updateUniverse(0, [0, 0], [5, 1], 1);
 
+let didSomething = true;
 
-while(universes.length > 0) {
-  const universe = universes.shift();
+const startTime = new Date();
 
-  const newTurn = (universe.turn+1) % 2;
+while(didSomething) {
+  didSomething = false;
+  for (let turn = 0; turn < 2; turn++) {
+    for (let p1Score = 0; p1Score < 21; p1Score++) {
+      for (let p2Score = 0; p2Score < 21; p2Score++) {
+        for (let p1Position = 0; p1Position < 10; p1Position++) {
+          for (let p2Position = 0; p2Position < 10; p2Position++) {
+            for (let i = 3; i <= 9; i++) {
+              if (get(universesMap, [turn, p1Score, p2Score, p1Position, p2Position])) {
+                didSomething = true;
+                const positions: [number, number] = [p1Position, p2Position];
+                const scores: [number, number] = [p1Score, p2Score];
+                const multiplicity = (universesMap[turn][p1Score][p2Score][p1Position][p2Position] * rollWeights[i]);
+                positions[turn] = (positions[turn] + i) % 10;
+                scores[turn] += positions[turn] + 1;
 
-  for (let i = 3; i <= 9; i++) {
-    const positions: [number, number] = [...universe.positions];
-    const scores: [number, number] = [...universe.scores];
-    const multiplicity = (universe.multiplicity * rollWeights[i]);
-    positions[universe.turn] = (positions[universe.turn] + i) % 10;
-    scores[universe.turn] += positions[universe.turn] + 1;
+                if (scores[turn] >= 21) {
+                  universeWinners[turn] += multiplicity;
+                } else {
+                  updateUniverse((turn+1)%2, scores, positions, multiplicity);
+                }
+              }
+            }
 
-    if (scores[universe.turn] >= 21) {
-      universeWinners[universe.turn] += multiplicity;
-    } else {
-      addUniverse({
-        scores,
-        positions,
-        turn: newTurn,
-        multiplicity,
-      });
+            set(universesMap, [turn, p1Score, p2Score, p1Position, p2Position], 0);
+          }
+        }
+      }
     }
   }
 }
 
-console.log(Math.max(...universeWinners));
+const endTime = new Date();
+
+console.log(endTime.valueOf() - startTime.valueOf());
+
+console.log(universeWinners);
