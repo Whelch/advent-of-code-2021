@@ -23,7 +23,7 @@ const rollWeights: Record<number, number> = {
  */
 type UniverseMap = Record<number, Record<number, Record<number, Record<number, number>>>>;
 
-let universesMap: UniverseMap =  {};
+let universesMap: UniverseMap = {};
 
 let universeWinners: [number, number] = [0, 0];
 
@@ -66,6 +66,6 @@ while(Object.keys(universesMap).length > 0) {
 
 const endTime = new Date();
 
-console.log(endTime.valueOf() - startTime.valueOf());
+console.log(`algorithm run time: ${endTime.valueOf() - startTime.valueOf()}ms`);
 
 console.log(universeWinners);
