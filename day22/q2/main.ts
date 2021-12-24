@@ -146,7 +146,7 @@ rects.push([lowBound, highBound]);
 
 procedures.forEach(([on, lowBound, highBound], index) => {
 
-  console.log(`Procedure ${index} pf ${procedures.length}`);
+  console.log(`Procedure ${index} of ${procedures.length}`);
 
   let newRect: Rect = [lowBound, highBound];
   if(!on) {
